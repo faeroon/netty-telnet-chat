@@ -1,0 +1,14 @@
+**/.idea
+**/.settings
+**/.classpath
+**/.project
+**/target
+**/log
+**/overlays
+
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.iws

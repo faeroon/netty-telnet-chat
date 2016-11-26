@@ -1,0 +1,32 @@
+group 'com.example'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "com.example.telnetirc.TelnetIrcServer"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+compileJava {
+    sourceCompatibility = '1.8'
+}
+
+run {
+    if (System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    } else args "9090".split()
+}
+
+dependencies {
+    compile 'io.netty:netty-all:4.0.42.Final'
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile 'org.mockito:mockito-core:2.2.22'
+    testCompile 'org.assertj:assertj-core:3.6.0'
+}

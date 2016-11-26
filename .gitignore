@@ -6,9 +6,16 @@
 **/log
 **/overlays
 
+
 *.class
 *.jar
 *.war
 *.ear
 *.iml
 *.iws
+
+.gradle
+build/
+
+gradle-app.setting
+!gradle-wrapper.jar

@@ -65,7 +65,7 @@ public class ChatChannel {
         if (username == null || username.isEmpty()) throw new IllegalArgumentException("username is null or empty");
         if (channel == null) throw new IllegalArgumentException("channel can't be null");
 
-        if (usersLimitSemaphore.tryAcquire()) {
+        if (!users.containsKey(username) && usersLimitSemaphore.tryAcquire()) {
             if (users.putIfAbsent(username, LocalDateTime.now()) == null) {
 
                 getLastMessages().stream().forEach(message -> channel.write(message.toString()));

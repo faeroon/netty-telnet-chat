@@ -14,7 +14,7 @@ import io.netty.handler.codec.string.StringEncoder;
  */
 public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private static final int USER_CHANNEL_LIMIT = 2;
+    private static final int USER_CHANNEL_LIMIT = 10;
 
 
     private static final StringDecoder STRING_DECODER = new StringDecoder();

@@ -3,6 +3,7 @@ package com.example.telnetirc.unit;
 import com.example.telnetirc.chat.ChatChannel;
 import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.ChannelGroupFuture;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -24,6 +25,7 @@ public class ChatChannelTest {
     @Before
     public void setUp() {
         channelGroup = mock(ChannelGroup.class);
+        when(channelGroup.writeAndFlush(any())).thenReturn(mock(ChannelGroupFuture.class));
     }
 
     //region constructor tests
@@ -252,7 +254,7 @@ public class ChatChannelTest {
         ChatChannel chatChannel = new ChatChannel(2, 1, channelGroup);
 
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
-        when(channelGroup.writeAndFlush(messageCaptor.capture())).thenReturn(null);
+        when(channelGroup.writeAndFlush(messageCaptor.capture())).thenReturn(mock(ChannelGroupFuture.class));
 
         String text = "some text";
         chatChannel.chat("vasya", text);

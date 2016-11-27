@@ -2,6 +2,10 @@ package com.example.telnetirc.chat;
 
 import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.ChannelGroupFuture;
+import io.netty.channel.group.ChannelGroupFutureListener;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.FutureListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 /**
@@ -26,6 +31,7 @@ public class ChatChannel {
     private final Semaphore usersLimitSemaphore;
     private final ConcurrentHashMap<String, LocalDateTime> users;
     private final ConcurrentLinkedDeque<ChatMessage> messagesDeque;
+    private final AtomicInteger messageHistorySize;
 
     /**
      *
@@ -42,6 +48,7 @@ public class ChatChannel {
         usersLimitSemaphore = new Semaphore(usersLimit);
         users = new ConcurrentHashMap<>(usersLimit);
         this.lastMessageCount = lastMessageCount;
+        this.messageHistorySize = new AtomicInteger(0);
     }
 
     /**
@@ -131,6 +138,16 @@ public class ChatChannel {
 
         ChatMessage message = new ChatMessage(username, text);
         messagesDeque.addLast(message);
-        group.writeAndFlush(message.toString());
+        messageHistorySize.incrementAndGet();
+        group.writeAndFlush(message.toString()).addListener(future -> {
+            while (true) {
+                int currentValue = messageHistorySize.get();
+                if (currentValue <= lastMessageCount) break;
+                if (messageHistorySize.compareAndSet(currentValue, currentValue - 1)) {
+                    messagesDeque.removeFirst();
+                    break;
+                }
+            }
+        });
     }
 }
